@@ -25,10 +25,10 @@ jobs:
 
       - name: Build EXE
         run: |
-          pyinstaller ^
-            --onefile ^
-            --noconsole ^
-            --icon=icon.ico ^
+          pyinstaller `
+            --onefile `
+            --noconsole `
+            --icon=icon.ico `
             --name WaterRemovalApp ^
             main.py
 
