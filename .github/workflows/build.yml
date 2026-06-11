@@ -1,0 +1,55 @@
+name: Build EXE and Release
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install pyinstaller
+          pip install opencv-python numpy pillow
+
+      - name: Build EXE
+        run: |
+          pyinstaller ^
+            --onefile ^
+            --noconsole ^
+            --icon=icon.ico ^
+            --name WaterRemovalApp ^
+            main.py
+
+      - name: Prepare Release Files
+        run: |
+          mkdir release
+          copy dist\WaterRemovalApp.exe release\WaterRemovalApp.exe
+
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git tag build-%GITHUB_RUN_NUMBER%
+          git push origin build-%GITHUB_RUN_NUMBER%
+        shell: bash
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: release/WaterRemovalApp.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
