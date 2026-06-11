@@ -25,17 +25,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install Dependencies
-        run: |
-          pip install pyinstaller opencv-python-headless numpy pillow
+        run: pip install pyinstaller opencv-python-headless numpy pillow
 
       - name: Build EXE
-        run: |
-          pyinstaller ^
-            --onefile ^
-            --noconsole ^
-            --icon=icon.ico ^
-            --name WaterRemovalApp ^
-            Remove_water.py
+        run: pyinstaller --onefile --noconsole --icon=icon.ico --name WaterRemovalApp Remove_water.py
 
       - name: Upload Release
         uses: softprops/action-gh-release@v1
