@@ -13,30 +13,34 @@ class WaterRemovalApp:
         self.display_image = None
         self.history = []
         self.ref_colors = []
-        self.click_points = []  # NEW: store click positions
+        self.click_points = []
 
-        # Buttons
-        tk.Button(root, text="Load Image", command=self.load_image).pack(pady=3)
-        tk.Button(root, text="Apply Water Correction", command=self.apply_processing).pack(pady=3)
-        tk.Button(root, text="Clear Samples", command=self.clear_samples).pack(pady=3)
-        tk.Button(root, text="Undo", command=self.undo).pack(pady=3)
-        tk.Button(root, text="Reset", command=self.reset_image).pack(pady=3)
-        tk.Button(root, text="Save Output", command=self.save_image).pack(pady=3)
+        
+        button_frame = tk.Frame(root)
+        button_frame.pack(pady=5)
 
-        # Strength slider
+        tk.Button(button_frame, text="Load Image", command=self.load_image).pack(side="left", padx=3)
+        tk.Button(button_frame, text="Apply Water Correction", command=self.apply_processing).pack(side="left", padx=3)
+        tk.Button(button_frame, text="Clear Samples", command=self.clear_samples).pack(side="left", padx=3)
+        tk.Button(button_frame, text="Undo", command=self.undo).pack(side="left", padx=3)
+        tk.Button(button_frame, text="Reset", command=self.reset_image).pack(side="left", padx=3)
+        tk.Button(button_frame, text="Save Output", command=self.save_image).pack(side="left", padx=3)
+
+       
+        tk.Button(button_frame, text="Quit", command=root.destroy, fg="white", bg="red").pack(side="left", padx=3)
+
+        
         self.strength = tk.Scale(root, from_=0, to=200,
                                 orient="horizontal",
-                                label="Correction Strength (%)")
+                                label="Scale Strength")
         self.strength.set(100)
         self.strength.pack(pady=5)
 
-        # Canvas
+       
         self.canvas = tk.Canvas(root, width=1000, height=500)
         self.canvas.pack()
 
         self.canvas.bind("<Button-1>", self.pick_color)
-
-    
 
     def load_image(self):
         path = filedialog.askopenfilename(
@@ -62,8 +66,6 @@ class WaterRemovalApp:
             cv2.imwrite(path, self.display_image)
             messagebox.showinfo("Saved", "Image saved!")
 
-    
-
     def pick_color(self, event):
         if self.original_image is None:
             return
@@ -80,7 +82,6 @@ class WaterRemovalApp:
         color = self.original_image[y_img, x_img]
         self.ref_colors.append(color)
 
-       
         self.click_points.append((event.x, event.y))
 
         print(f"Sample added: {color} | Total: {len(self.ref_colors)}")
@@ -93,8 +94,6 @@ class WaterRemovalApp:
 
         print("Samples cleared")
         self.update_preview()
-
-    
 
     def apply_processing(self):
         if not self.ref_colors:
@@ -121,8 +120,6 @@ class WaterRemovalApp:
         self.display_image = result
         self.update_preview()
 
-
-
     def undo(self):
         if self.history:
             self.display_image = self.history.pop()
@@ -140,8 +137,6 @@ class WaterRemovalApp:
         print("Reset complete")
         self.update_preview()
 
-   
-
     def update_preview(self):
         if self.original_image is None:
             return
@@ -151,16 +146,15 @@ class WaterRemovalApp:
 
         combined = np.hstack((left, right))
 
-        # DRAW MARKERS
+        # Draw markers
         for (x, y) in self.click_points:
-            cv2.circle(combined, (x, y), 5, (0, 0, 255), -1)  # red dots
+            cv2.circle(combined, (x, y), 5, (0, 0, 255), -1)
 
         combined_rgb = cv2.cvtColor(combined, cv2.COLOR_BGR2RGB)
         img_pil = Image.fromarray(combined_rgb)
 
         self.tk_image = ImageTk.PhotoImage(img_pil)
         self.canvas.create_image(0, 0, anchor="nw", image=self.tk_image)
-
 
 if __name__ == "__main__":
     root = tk.Tk()
