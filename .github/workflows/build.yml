@@ -12,12 +12,15 @@ jobs:
   build:
     runs-on: windows-latest
 
+    permissions:
+      contents: write   # ✅ REQUIRED for releases
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -27,23 +30,18 @@ jobs:
 
       - name: Build EXE
         run: |
-          pyinstaller 
+          pyinstaller ^
             --onefile ^
             --noconsole ^
             --icon=icon.ico ^
             --name WaterRemovalApp ^
             main.py
 
-      - name: Prepare Release
-        run: |
-          mkdir release
-          copy dist\WaterRemovalApp.exe release\WaterRemovalApp.exe
-
-      - name: Create Release
+      - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: build-${{ github.run_number }}
           name: Build ${{ github.run_number }}
-          files: release/WaterRemovalApp.exe
+          files: dist/WaterRemovalApp.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
