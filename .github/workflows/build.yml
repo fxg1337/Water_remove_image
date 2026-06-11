@@ -35,7 +35,7 @@ jobs:
             --noconsole ^
             --icon=icon.ico ^
             --name WaterRemovalApp ^
-            main.py
+            Remove_water.py
 
       - name: Upload Release
         uses: softprops/action-gh-release@v1
