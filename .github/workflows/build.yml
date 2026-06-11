@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     permissions:
-      contents: write   # ✅ REQUIRED for releases
+      contents: write  
 
     steps:
       - name: Checkout Repository
