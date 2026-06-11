@@ -14,39 +14,30 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.1.0
         with:
           python-version: '3.11'
 
       - name: Install Dependencies
         run: |
-          pip install pyinstaller
-          pip install opencv-python numpy pillow
+          pip install pyinstaller opencv-python-headless numpy pillow
 
       - name: Build EXE
         run: |
-          pyinstaller `
-            --onefile `
-            --noconsole `
-            --icon=icon.ico `
+          pyinstaller 
+            --onefile ^
+            --noconsole ^
+            --icon=icon.ico ^
             --name WaterRemovalApp ^
             main.py
 
-      - name: Prepare Release Files
+      - name: Prepare Release
         run: |
           mkdir release
           copy dist\WaterRemovalApp.exe release\WaterRemovalApp.exe
-
-      - name: Create Git Tag
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git tag build-%GITHUB_RUN_NUMBER%
-          git push origin build-%GITHUB_RUN_NUMBER%
-        shell: bash
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -56,3 +47,4 @@ jobs:
           files: release/WaterRemovalApp.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+``
