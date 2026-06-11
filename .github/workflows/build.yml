@@ -47,4 +47,3 @@ jobs:
           files: release/WaterRemovalApp.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-``
